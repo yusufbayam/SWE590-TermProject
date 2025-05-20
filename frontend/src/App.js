@@ -8,7 +8,7 @@ function App() {
 
   const callService1 = async () => {
     try {
-      const response = await fetch(`/api/service1/?input=${input}`);
+      const response = await fetch(`/api/service1/hello/?input=${encodeURIComponent(input)}`);
       const data = await response.json();
       setService1Response(data.message);
     } catch (error) {
@@ -19,7 +19,7 @@ function App() {
 
   const callService2 = async () => {
     try {
-      const response = await fetch(`/api/service2/?input=${input}`);
+      const response = await fetch(`/api/service2/evening/?input=${encodeURIComponent(input)}`);
       const data = await response.json();
       setService2Response(data.message);
     } catch (error) {

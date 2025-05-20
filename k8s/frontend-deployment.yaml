@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: us-docker.pkg.dev/white-site-459410-c0/swe590-project-images/frontend:latest
+        image: us-central1-docker.pkg.dev/white-site-459410-c0/swe590-project-images/frontend:latest
         ports:
         - containerPort: 80
         resources:

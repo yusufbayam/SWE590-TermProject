@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: service1
-        image: us-docker.pkg.dev/white-site-459410-c0/swe590-project-images/service1:latest
+        image: us-central1-docker.pkg.dev/white-site-459410-c0/swe590-project-images/service1:latest
         ports:
         - containerPort: 8000
         resources:
