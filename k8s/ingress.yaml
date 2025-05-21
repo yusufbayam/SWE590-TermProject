@@ -5,18 +5,6 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.allow-http: "true"
-    # Health check annotations
-    ingress.gcp.kubernetes.io/v1beta1.BackendConfig: '{
-      "healthCheck": {
-        "checkIntervalSec": 30,
-        "timeoutSec": 5,
-        "healthyThreshold": 1,
-        "unhealthyThreshold": 2,
-        "type": "HTTP",
-        "requestPath": "/",
-        "port": 8000
-      }
-    }'
 spec:
   rules:
   - http:
