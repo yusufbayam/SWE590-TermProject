@@ -27,4 +27,7 @@ Thumbs.db
 # Build artifacts (example, adjust if needed)
 build/
 dist/
-*.egg-info/ 
+*.egg-info/
+
+# Terraform
+terraform/.terraform/ 
