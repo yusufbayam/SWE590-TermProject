@@ -30,4 +30,7 @@ dist/
 *.egg-info/
 
 # Terraform
-terraform/.terraform/ 
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/.terraform.tfstate.lock.info
