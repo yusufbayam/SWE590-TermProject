@@ -33,7 +33,7 @@ provider "kubernetes" {
     token                  = data.google_client_config.default.access_token
     cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth[0].cluster_ca_certificate)
 }
-/*
+
 # --- Frontend Deployment ---
 resource "kubernetes_deployment" "frontend" {
   metadata {
@@ -170,7 +170,7 @@ resource "kubernetes_service" "frontend" {
       port        = 80
       target_port = 80
     }
-    type = "ClusterIP"
+    type = "NodePort"
   }
 }
 
@@ -187,7 +187,7 @@ resource "kubernetes_service" "service1" {
       port        = 8000
       target_port = 8000
     }
-    type = "ClusterIP"
+    type = "NodePort"
   }
 }
 
@@ -204,7 +204,7 @@ resource "kubernetes_service" "service2" {
       port        = 8000
       target_port = 8000
     }
-    type = "ClusterIP"
+    type = "NodePort"
   }
 }
 
@@ -260,4 +260,3 @@ resource "kubernetes_ingress_v1" "main" {
     }
   }
 }
-*/
