@@ -55,7 +55,7 @@ resource "kubernetes_deployment" "frontend" {
       spec {
         container {
           name  = "frontend"
-          image = "us-central1-docker.pkg.dev/white-site-459410-c0/swe590-project-images/frontend:latest"
+          image = "us-central1-docker.pkg.dev/${var.project_id}/swe590-project-images/frontend:${var.image_versions.frontend}"
           port {
             container_port = 80
           }
@@ -96,7 +96,7 @@ resource "kubernetes_deployment" "service1" {
       spec {
         container {
           name  = "service1"
-          image = "us-central1-docker.pkg.dev/white-site-459410-c0/swe590-project-images/service1:latest"
+          image = "us-central1-docker.pkg.dev/${var.project_id}/swe590-project-images/service1:${var.image_versions.service1}"
           port {
             container_port = 8000
           }
@@ -137,7 +137,7 @@ resource "kubernetes_deployment" "service2" {
       spec {
         container {
           name  = "service2"
-          image = "us-central1-docker.pkg.dev/white-site-459410-c0/swe590-project-images/service2:latest"
+          image = "us-central1-docker.pkg.dev/${var.project_id}/swe590-project-images/service2:${var.image_versions.service2}"
           port {
             container_port = 8000
           }

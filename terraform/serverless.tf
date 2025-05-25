@@ -24,3 +24,13 @@ resource "google_cloudfunctions_function" "negative_image" {
   available_memory_mb = 256
   timeout = 60
 }
+
+# IAM entry for all users to invoke the function
+resource "google_cloudfunctions_function_iam_member" "invoker" {
+  project        = google_cloudfunctions_function.negative_image.project
+  region         = google_cloudfunctions_function.negative_image.region
+  cloud_function = google_cloudfunctions_function.negative_image.name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = "allUsers"
+}

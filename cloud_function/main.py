@@ -2,13 +2,26 @@ from flask import request, make_response
 from PIL import Image, ImageOps
 import io
 import traceback
+import os
+
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
+    return response
 
 def negative_image(request):
+    if request.method == 'OPTIONS':
+        response = make_response('', 204)
+        return add_cors_headers(response)
+
     if request.method != 'POST':
-        return make_response('POST method required', 405)
+        response = make_response('POST method required', 405)
+        return add_cors_headers(response)
 
     if 'file' not in request.files:
-        return make_response('No file part', 400)
+        response = make_response('No file part', 400)
+        return add_cors_headers(response)
 
     file = request.files['file']
     try:
@@ -20,7 +33,8 @@ def negative_image(request):
         response = make_response(img_byte_arr.read())
         response.headers.set('Content-Type', 'image/png')
         response.headers.set('Content-Disposition', 'attachment', filename='negative.png')
-        return response
+        return add_cors_headers(response)
     except Exception as e:
         print(traceback.format_exc())
-        return make_response(str(e), 500)
+        response = make_response(str(e), 500)
+        return add_cors_headers(response)

@@ -6,6 +6,12 @@ function App() {
   const [service1Response, setService1Response] = useState('');
   const [service2Response, setService2Response] = useState('');
 
+  // --- Cloud Function State ---
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [processing, setProcessing] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState(null);
+  const [cloudFnError, setCloudFnError] = useState('');
+
   const callService1 = async () => {
     try {
       const response = await fetch(`/api/service1/hello/?input=${encodeURIComponent(input)}`);
@@ -25,6 +31,44 @@ function App() {
     } catch (error) {
       console.error('Error calling service 2:', error);
       setService2Response('Error: Could not connect to service');
+    }
+  };
+
+  // --- Cloud Function Handler (via backend proxy) ---
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+    setDownloadUrl(null);
+    setCloudFnError('');
+  };
+
+  const handleCloudFunction = async () => {
+    if (!selectedFile) {
+      setCloudFnError('Please select an image file.');
+      return;
+    }
+    setProcessing(true);
+    setCloudFnError('');
+    setDownloadUrl(null);
+    try {
+      const proxyUrl = '/api/service1/negative-image/';
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      const response = await fetch(proxyUrl, {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Backend proxy error: ${text}`);
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      setDownloadUrl(url);
+    } catch (err) {
+      setCloudFnError(err.message);
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -53,6 +97,18 @@ function App() {
             <h3>Service 2 Response:</h3>
             <p>{service2Response}</p>
           </div>
+        </div>
+        {/* --- Cloud Function Section --- */}
+        <div className="cloud-function-section">
+          <h2>Image Negative Cloud Function</h2>
+          <input type="file" accept="image/*" onChange={handleFileChange} />
+          <button onClick={handleCloudFunction} disabled={processing}>
+            {processing ? 'Processing...' : 'Create Negative'}
+          </button>
+          {cloudFnError && <p style={{ color: 'red' }}>{cloudFnError}</p>}
+          {downloadUrl && (
+            <a href={downloadUrl} download="negative.png">Download Negative Image</a>
+          )}
         </div>
       </header>
     </div>
