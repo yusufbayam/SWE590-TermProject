@@ -34,3 +34,4 @@ terraform/.terraform/
 terraform/*.tfstate
 terraform/*.tfstate.*
 terraform/.terraform.tfstate.lock.info
+locust/results/*
