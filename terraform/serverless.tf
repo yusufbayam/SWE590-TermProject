@@ -21,8 +21,11 @@ resource "google_cloudfunctions_function" "negative_image" {
   source_archive_object = google_storage_bucket_object.function_zip.name
 
   trigger_http = true
-  available_memory_mb = 256
+  available_memory_mb = 512
   timeout = 60
+
+  max_instances = 10
+  min_instances = 1
 }
 
 # IAM entry for all users to invoke the function
