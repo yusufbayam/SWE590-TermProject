@@ -18,7 +18,7 @@ variable "gke_cluster_name" {
 variable "gke_num_nodes" {
   description = "Number of nodes in the default node pool"
   type        = number
-  default     = 2
+  default     = 3
 }
 
 variable "frontend_autoscaling" {
@@ -71,6 +71,6 @@ variable "node_pool_autoscaling" {
   })
   default = {
     min_node_count = 1
-    max_node_count = 3
+    max_node_count = 4
   }
 }

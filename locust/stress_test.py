@@ -30,7 +30,6 @@ def on_test_start(environment, **kwargs):
         writer = csv.writer(csvfile)
         writer.writerow(['Time (s)', 'Requests', 'Success Rate (%)', 'Avg Response Time (ms)', 'RPS', 'Failures'])
     
-    environment.runner.add_listener(record_stats)
 
 def record_stats():
     global start_time, request_count, success_count, failure_count, response_times
