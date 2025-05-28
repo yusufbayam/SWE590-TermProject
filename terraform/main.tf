@@ -7,6 +7,13 @@ resource "google_container_cluster" "primary" {
 
   network    = "default"
   subnetwork = "default"
+  
+  # Enable Horizontal Pod Autoscaling
+  addons_config {
+    horizontal_pod_autoscaling {
+      disabled = false
+    }
+  }
 }
 
 resource "google_container_node_pool" "primary_nodes" {
@@ -15,6 +22,12 @@ resource "google_container_node_pool" "primary_nodes" {
   cluster    = google_container_cluster.primary.name
 
   node_count = var.gke_num_nodes
+  
+  # Enable node pool autoscaling
+  autoscaling {
+    min_node_count = var.node_pool_autoscaling.min_node_count
+    max_node_count = var.node_pool_autoscaling.max_node_count
+  }
 
   node_config {
     machine_type = "e2-medium"
@@ -122,7 +135,7 @@ resource "kubernetes_deployment" "service2" {
     name = "service2"
   }
   spec {
-    replicas = 1
+    replicas = 2
     selector {
       match_labels = {
         app = "service2"
@@ -259,4 +272,166 @@ resource "kubernetes_ingress_v1" "main" {
       }
     }
   }
+}
+
+# --- Frontend Horizontal Pod Autoscaler ---
+resource "kubernetes_horizontal_pod_autoscaler_v2" "frontend_hpa" {
+  metadata {
+    name = "frontend-hpa"
+  }
+
+  spec {
+    scale_target_ref {
+      api_version = "apps/v1"
+      kind        = "Deployment"
+      name        = kubernetes_deployment.frontend.metadata[0].name
+    }
+
+    min_replicas = var.frontend_autoscaling.min_replicas
+    max_replicas = var.frontend_autoscaling.max_replicas
+
+    metric {
+      type = "Resource"
+      resource {
+        name = "cpu"
+        target {
+          type                = "Utilization"
+          average_utilization = var.frontend_autoscaling.cpu_utilization_target
+        }
+      }
+    }
+
+    behavior {
+      scale_up {
+        stabilization_window_seconds = 60
+        select_policy                = "Max"
+        policy {
+          type           = "Percent"
+          value          = 100
+          period_seconds = 30
+        }
+      }
+      scale_down {
+        stabilization_window_seconds = 300
+        select_policy                = "Max"
+        policy {
+          type           = "Percent"
+          value          = 100
+          period_seconds = 60
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    kubernetes_deployment.frontend
+  ]
+}
+
+# --- Service1 Horizontal Pod Autoscaler ---
+resource "kubernetes_horizontal_pod_autoscaler_v2" "service1_hpa" {
+  metadata {
+    name = "service1-hpa"
+  }
+
+  spec {
+    scale_target_ref {
+      api_version = "apps/v1"
+      kind        = "Deployment"
+      name        = kubernetes_deployment.service1.metadata[0].name
+    }
+
+    min_replicas = var.service1_autoscaling.min_replicas
+    max_replicas = var.service1_autoscaling.max_replicas
+
+    metric {
+      type = "Resource"
+      resource {
+        name = "cpu"
+        target {
+          type                = "Utilization"
+          average_utilization = var.service1_autoscaling.cpu_utilization_target
+        }
+      }
+    }
+
+    behavior {
+      scale_up {
+        stabilization_window_seconds = 60
+        select_policy                = "Max"
+        policy {
+          type           = "Percent"
+          value          = 100
+          period_seconds = 30
+        }
+      }
+      scale_down {
+        stabilization_window_seconds = 300
+        select_policy                = "Max"
+        policy {
+          type           = "Percent"
+          value          = 100
+          period_seconds = 60
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    kubernetes_deployment.service1
+  ]
+}
+
+# --- Service2 Horizontal Pod Autoscaler ---
+resource "kubernetes_horizontal_pod_autoscaler_v2" "service2_hpa" {
+  metadata {
+    name = "service2-hpa"
+  }
+
+  spec {
+    scale_target_ref {
+      api_version = "apps/v1"
+      kind        = "Deployment"
+      name        = kubernetes_deployment.service2.metadata[0].name
+    }
+
+    min_replicas = var.service2_autoscaling.min_replicas
+    max_replicas = var.service2_autoscaling.max_replicas
+
+    metric {
+      type = "Resource"
+      resource {
+        name = "cpu"
+        target {
+          type                = "Utilization"
+          average_utilization = var.service2_autoscaling.cpu_utilization_target
+        }
+      }
+    }
+
+    behavior {
+      scale_up {
+        stabilization_window_seconds = 60
+        select_policy                = "Max"
+        policy {
+          type           = "Percent"
+          value          = 100
+          period_seconds = 30
+        }
+      }
+      scale_down {
+        stabilization_window_seconds = 300
+        select_policy                = "Max"
+        policy {
+          type           = "Percent"
+          value          = 100
+          period_seconds = 60
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    kubernetes_deployment.service2
+  ]
 }

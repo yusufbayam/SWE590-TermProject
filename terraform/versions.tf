@@ -6,8 +6,8 @@ variable "image_versions" {
     service2 = string
   })
   default = {
-    frontend = "20250525184856"
-    service1 = "20250525184856"
-    service2 = "20250525184856"
+    frontend = "20250528014511"
+    service1 = "20250528014511"
+    service2 = "20250528014511"
   }
 }
